@@ -1,0 +1,153 @@
+<script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+<html>
+    <head>
+    	<meta charset="ISO-8859-1">
+    	<meta name="viewport" content="width=device-width, initial-scale=1">
+    	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous"> 
+        <title>Stadistic Web</title>
+    </head>
+    <script type="text/javascript">
+		function promedio(v,x) {
+			var i,j,prom=0;
+			if (x<10){
+				for (i=0; i< x; i++){
+					prom= prom + parseInt(v[i]);
+					console.log (prom);
+				}
+				prom= prom / x;
+			}
+			else{ 
+				for (j=0; j< 10; j++){
+					prom= prom + parseInt(v[j]);
+				}
+				prom= prom / 10;
+			}
+			return prom;	
+		}
+
+		var m_temp= [10];
+		var m_humedad= [10];
+		var m_presion= [10];
+		var m_viento= [10];
+		var temp = JSON.parse({{ r_temp | tojson }});
+		var humedad = JSON.parse({{ r_humedad | tojson }});
+		var presion = JSON.parse({{ r_presion | tojson }});
+		var viento = JSON.parse({{ r_viento | tojson }});
+		var frecuencia= parseInt({{ frec }});
+
+		var bol=0;
+		var indice =0;
+		for (var x = 0;  x< temp.length; x++) {
+			setTimeout(function(y) { 
+				document.getElementById("TA").innerHTML = temp[y];
+				document.getElementById("HA").innerHTML = humedad[y];
+				document.getElementById("PA").innerHTML = presion[y];
+				document.getElementById("VA").innerHTML = viento[y];
+
+
+				m_temp[indice]= temp[y];
+				m_humedad[indice]= humedad[y];
+				m_presion[indice]= presion[y];
+				m_viento[indice]= viento[y];
+
+				indice = (indice + 1) % 10;
+
+				document.getElementById("TP").innerHTML = promedio(m_temp, y+1);
+				document.getElementById("HP").innerHTML = promedio(m_humedad, y+1);
+				document.getElementById("PP").innerHTML = promedio(m_presion, y+1);
+				document.getElementById("VP").innerHTML = promedio(m_viento, y+1);
+
+				if(y==(temp.length-1)){
+					   document.getElementById("FN").innerHTML = "Terminó el análisis de los datos"; 
+				}
+
+			}, x*frecuencia*1000, x); // we're passing x
+		}
+
+		
+
+	</script>
+
+    <body>
+    	<div class="container-fluid">
+	    	<div class="jumbotron">
+	    		<h1 class="display-3">Datos Recolectados</h1>
+		    	<table class="table">
+				  <thead class="thead-inverse">
+
+				  	<tr>
+				  		<th>Periodo de Muestreo (Segundos)</th>
+				  	</tr>
+				  </thead>
+				  <tbody>
+				    <tr>
+				      <td>  {{ frec }}   </td>
+				    </tr> 
+				  </tbody>
+				</table>
+
+				<table class="table">
+				  <thead class="thead-inverse">
+				  	<tr>
+				  		<td>Promedio de Muestras</td>
+				  	</tr>
+				    <tr>
+				      <th>Temperatura</th>
+				      <th>Humedad</th>
+				      <th>Presion</th>
+				      <th>Viento</th>
+				    </tr>
+				  </thead>
+				  <tbody>
+				    <tr>
+				      <td><hr id="TP"> </hr></td>
+				      <td><hr id="HP"> </hr></td>
+				      <td><hr id="PP"> </hr></td>
+				      <td><hr id="VP"> </hr></td>
+				    </tr>
+				  </tbody>
+				</table>
+
+
+
+				<table class="table">
+				  <thead class="thead-inverse">
+
+				  	<tr>
+				  		<td>Muestra Actual</td>
+				  	</tr>
+
+				    <tr>
+				      <th>Temperatura</th>
+				      <th>Humedad</th>
+				      <th>Presion</th>
+				      <th>Viento</th>
+				    </tr>
+				  </thead>
+				  <tbody>
+				    <tr>
+				      <td><hr id="TA"> </hr></td>
+				      <td><hr id="HA"> </hr></td>
+				      <td><hr id="PA"> </hr></td>
+				      <td><hr id="VA"> </hr></td>
+				    </tr>
+				     <tr>
+				     	<td><hr id="FN"> </hr></td>
+				     </tr>
+				  </tbody>
+				</table>
+
+
+				<form action="/form_c" method="GET">
+	            	<input type="hidden" class="form-control" id="frecuencia" name="frecuencia" value={{ frec }} />
+	            	<button type="submit" class="btn btn-primary" >Analizar mas datos</button>
+	        	</form>
+
+	        	<form action="/">
+	            	<button type="submit" class="btn btn-primary" >Analizar con otra frecuencia</button>
+	        	</form>
+
+			</div>
+		</div>
+    </body>
+</html>
