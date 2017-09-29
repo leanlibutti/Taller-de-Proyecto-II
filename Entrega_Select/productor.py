@@ -6,17 +6,15 @@ import time
 import MySQLdb
 from random import randrange
 
-
 app = Flask(__name__)
 
 @app.route('/')
 def index ():
 
-	return render_template('form.html')
+	return render_template('form_p.html')
 
 @app.route('/form_p', methods = ['GET'])
 def action_form (frecuencia= None):
-	x=0
 	frecuencia = int(request.args["frecuencia"])
 	print frecuencia
 	conn = MySQLdb.connect(
@@ -24,7 +22,7 @@ def action_form (frecuencia= None):
 		passwd="1234", db="datos"
 	)
 	cursor = conn.cursor()
-	while x<10:
+	while 1:
 		temp= randrange(30)
 		humedad= randrange(100)
 		presion= 1000 + (randrange(20))
@@ -34,7 +32,6 @@ def action_form (frecuencia= None):
 		cursor.execute (select,data)
 		conn.commit()
 		time.sleep(frecuencia)
-		x= x+1
 		pass
 	conn.close()
 
